@@ -127,7 +127,7 @@ function send_reminder_notification() {
         $body .= '<br><strong>'.get_string("duration", "visio").'</strong> : '.gmdate('H:i', $visio->duration).'</p>';
 
         foreach($enrolled as $enrol) {
-            $message = prepare_message($USER, $enrol->id, $visio->course, $visio->id, get_string('messageprovider:beginsoon', 'visio'), $body, $visio->name);
+            $message = prepare_message($USER, $enrol->id, $visio->course, $cm->id, get_string('messageprovider:beginsoon', 'visio'), $body, $visio->name);
             message_send($message);
         }
     }

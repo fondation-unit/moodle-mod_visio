@@ -112,6 +112,7 @@ function visio_delete_instance($id) {
 
     $subject = get_string('nofiticationdeletion', 'visio');
     $body = get_string('messageprovider:notificationdeletion', 'visio');
+    
     send_visio_notifications($USER, $visio->course, $visio->id, $subject, $body, $visio->name);
 
     $DB->delete_records('event', array('modulename'=>'visio', 'instance'=>$visio->id));

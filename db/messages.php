@@ -25,12 +25,36 @@ defined('MOODLE_INTERNAL') || die;
 
 
 $messageproviders = array (
-    // Notify teacher that a visio has to begin soon
+    // Notify a user that a visio has to begin soon
     'beginsoon' => array (
-        'capability'  => 'mod/visio:addinstance'
+        'defaults' => [
+            'popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,
+            'email' => MESSAGE_PERMITTED
+        ],
+        'capability'  => 'mod/visio:view'
     ),
     // Notify student that a teacher has created a new visio
     'submission' => array (
+        'defaults' => [
+            'popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,
+            'email' => MESSAGE_PERMITTED
+        ],
+        'capability'  => 'mod/visio:view'
+    ),
+    // Notify student that a teacher has updated an instance of visio
+    'submissionupdated' => array (
+        'defaults' => [
+            'popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,
+            'email' => MESSAGE_PERMITTED
+        ],
+        'capability'  => 'mod/visio:view'
+    ),
+    // Notify student that a teacher has deleted an instance of visio
+    'submissiondeletion' => array (
+        'defaults' => [
+            'popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,
+            'email' => MESSAGE_PERMITTED
+        ],
         'capability'  => 'mod/visio:view'
     )
 );
