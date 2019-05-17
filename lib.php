@@ -103,7 +103,7 @@ function visio_update_instance($data, $mform) {
 function visio_delete_instance($id) {
     global $DB, $USER;
 
-    if (!$visio = $DB->get_record('visio', array('id'=>$id))) {
+    if (!$visio = $DB->get_record('visio', array('id' => $id))) {
         return false;
     }
 
@@ -115,8 +115,8 @@ function visio_delete_instance($id) {
     
     send_visio_notifications($USER, $visio->course, $visio->id, $subject, $body, $visio->name);
 
-    $DB->delete_records('event', array('modulename'=>'visio', 'instance'=>$visio->id));
-    $DB->delete_records('visio', array('id'=>$visio->id));
+    $DB->delete_records('event', array('modulename' => 'visio', 'instance' => $visio->id));
+    $DB->delete_records('visio', array('id' => $visio->id));
     
     return true;
 }

@@ -55,6 +55,8 @@ $string['urlroom3'] = 'URL salle 3';
 $string['urlroom4'] = 'URL salle 4';
 $string['urlroom5'] = 'URL salle 5';
 
+$string['visio_presence'] = 'Présence';
+
 $string['crontask'] = 'Notifications de visios.';
 
 $string['messageprovider:beginsoon'] = '<p>Une web-conférence démarre bientôt.</p>';

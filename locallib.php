@@ -132,3 +132,90 @@ function send_reminder_notification() {
         }
     }
 }
+
+function get_roles_in_course($instanceid) {
+    global $DB;
+
+    $req = 'SELECT rolestoshow FROM {observation} where id = '.$instanceid;
+    $roles = $DB->get_records_sql($req);
+
+    foreach ($roles as $role) {
+        return json_decode($role->rolestoshow);
+    }
+}
+
+function generate_sql($cm, $userid, $courseid) {
+    global $CFG, $USER, $DB;
+
+    require_once($CFG->dirroot . '/course/lib.php');
+    require_once($CFG->dirroot . '/user/lib.php');
+
+    $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
+    $coursecontext = context_course::instance($courseid, IGNORE_MISSING);
+
+    if ($courseid == SITEID) {
+        $context = context_system::instance();
+    } else {
+        $context = $coursecontext;
+    }
+    try {
+        external_api::validate_context($context);
+    } catch (Exception $e) {
+        $exceptionparam = new stdClass();
+        $exceptionparam->message = $e->getMessage();
+        $exceptionparam->courseid = $courseid;
+        throw new moodle_exception('errorcoursecontextnotvalid' , 'webservice', '', $exceptionparam);
+    }
+
+    course_require_view_participants($context);
+
+    list($enrolledsql, $enrolledparams) = get_enrolled_sql($coursecontext, '', null, false);
+
+    $ctxselect = ', ' . context_helper::get_preload_record_columns_sql('ctx');
+    $ctxjoin = "LEFT JOIN {context} ctx ON (ctx.instanceid = u.id AND ctx.contextlevel = :contextlevel)";
+    $enrolledparams['contextlevel'] = CONTEXT_USER;
+
+    $groupmode = groups_get_activity_groupmode($cm, $course);
+
+    $groupjoin = '';
+    if ($groupmode == SEPARATEGROUPS) {
+        // Filter by groups the user can view.
+        $usersgroups = groups_get_user_groups($courseid, $userid);
+
+        if (!empty($usergroups['0'])) {
+            list($groupsql, $groupparams) = $DB->get_in_or_equal($usergroups['0'], SQL_PARAMS_NAMED);
+            $groupjoin = "JOIN {groups_members} gm ON (u.id = gm.userid AND gm.groupid $groupsql)";
+            $enrolledparams = array_merge($enrolledparams, $groupparams);
+        } else {
+            // User doesn't belong to any group, so he can't see any user. Return an empty array.
+            return array();
+        }
+    }
+
+    foreach($usersgroups as $group) {
+        $users = groups_get_members($group);
+    }
+
+    $sqlselect = 'us.*';
+    $sqlfrom = '{user} us
+              JOIN (
+                  SELECT DISTINCT u.id '.$ctxselect.'
+                    FROM {user} u '.$ctxjoin . $groupjoin . '
+                   WHERE u.id IN ('.$enrolledsql.')
+              ) q ON q.id = us.id';
+
+    // Check if the user id is in the list of users enrolled in a course with specified roles.
+    $sqlwhere = 'us.id IN('.
+    'SELECT ue.userid FROM mdl_role_assignments AS ra '.
+    'LEFT JOIN mdl_user_enrolments AS ue ON ra.userid = ue.userid '.
+    'LEFT JOIN mdl_context AS c ON c.id = ra.contextid '.
+    'LEFT JOIN mdl_enrol AS e ON e.courseid = c.instanceid AND ue.enrolid = e.id '.
+    'WHERE e.courseid = '.$courseid.')';
+
+    $enrolledparams = array_merge($enrolledparams);
+    if ($enrolledparams == null) {
+        $enrolledparams = array();
+    }
+
+    return array('select' => $sqlselect, 'from' => $sqlfrom, 'where' => $sqlwhere, 'param' => $enrolledparams);
+}

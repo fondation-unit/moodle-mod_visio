@@ -47,7 +47,7 @@ class mod_visio_external extends external_api {
         global $CFG;
 
         //Parameters validation.
-        $params = self::validate_parameters(self::host_launch_visio_parameters(), array('url'=>$url));
+        $params = self::validate_parameters(self::host_launch_visio_parameters(), array('url' => $url));
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -90,5 +90,41 @@ class mod_visio_external extends external_api {
     public static function host_launch_visio_returns() {
         return new external_value(PARAM_RAW, 'Visio launched by the host');
     }
-    
+
+
+    /**
+     * Describes the parameters for set_presence.
+     * 
+     * @return external_function_parameters
+     * @since  Moodle 3.4
+     */
+    public static function set_presence_parameters() {
+        return new external_function_parameters(  
+            array(
+                'user_id' => new external_value(PARAM_INT, 'The user ID'),
+                'value' => new external_value(PARAM_BOOL, 'The presence value'),
+            )
+        );
+    }
+
+    public static function set_presence($userid, $value) {
+        global $DB;
+
+        //Parameters validation.
+        $params = self::validate_parameters(self::set_presence_parameters(), 
+            array('user_id' => $userid, 'value' => $value));
+
+        return true;
+    }
+
+    /**
+     * Returns description of method result value.
+     *
+     * @return external_description
+     * @since Moodle 3.4
+     */
+    public static function set_presence_returns() {
+        return new external_value(PARAM_BOOL, 'The presence of the user was defined');
+    }
+
 }

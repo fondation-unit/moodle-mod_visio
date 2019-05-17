@@ -4,6 +4,7 @@ define([
     function(ajax, notification) {
 
     var Visio = function(url, roomUrl, accessString) {
+        setPresence();
         var container = document.getElementById('mod_visio_receiver');
         var button = document.createElement('button');
         button.classList = 'btn btn-primary';
@@ -25,6 +26,32 @@ define([
                 }
             }], true);
     };
+
+    var setPresence = function() {
+        var checkboxes = document.getElementsByClassName('visio_checkbox');
+        Array.prototype.slice.call(checkboxes).forEach(function(element) {
+            element.addEventListener('change', function() {
+                sendPresenceState(1, this.checked);
+            });
+        });
+    }
+
+    var sendPresenceState = function(user_id, value) {
+        ajax
+            .call([{
+                methodname: 'mod_visio_set_presence',
+                args: { 
+                    user_id: user_id,
+                    value: value
+                },
+                done: function(data) {
+                    console.log(data);
+                },
+                fail: function(ex) {
+                    notification.exception(ex);
+                }
+            }], true);
+    }
 
     return {
         'init': function(url, roomUrl, accessString) {

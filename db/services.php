@@ -29,7 +29,15 @@ $functions = array(
         'methodname'    => 'host_launch_visio',
         'description'   => 'Host launches a visio',
         'type'          => 'read',
-        'ajax'        => true,
+        'ajax'          => true,
+        'capabilities'  => 'mod/course:manageactivities'
+    ),
+    'mod_visio_set_presence' => array(
+        'classname'     => 'mod_visio_external',
+        'methodname'    => 'set_presence',
+        'description'   => 'Set the presence of a user',
+        'type'          => 'write',
+        'ajax'          => true,
         'capabilities'  => 'mod/course:manageactivities'
     )
 );
