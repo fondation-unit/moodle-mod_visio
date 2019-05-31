@@ -1,0 +1,17 @@
+<h2>Tableau des participants</h2>
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <th>Prénom</th>
+            <th>Nom</th>
+            <th>Email</th>
+            <th>Groupes</th>
+            <th>Présence</th>
+        </tr>
+    </thead>
+    <tbody>
+    {{#users}}
+        {{>mod_visio/table_item}}
+    {{/users}}
+    </tbody>
+</table>

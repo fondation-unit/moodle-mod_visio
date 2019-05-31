@@ -25,9 +25,7 @@ require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->dirroot . '/mod/visio/lib.php');
 require_once($CFG->dirroot . '/mod/visio/locallib.php');
 require_once($CFG->dirroot . '/enrol/externallib.php');
-require_once(dirname(__FILE__) . '/../../lib/tablelib.php');
 
-use flexible_table;
 
 define('DEFAULT_PAGE_SIZE', 10); // Number of page to show.
 $perpage = DEFAULT_PAGE_SIZE;
@@ -61,42 +59,6 @@ $PAGE->set_heading($course->fullname);
 // Check user's role.
 $isteacher = has_capability('gradereport/grader:view', $context);
 
-if ($isteacher) {
-    $table = new flexible_table('visio_participants');
-    $table->define_baseurl($PAGE->url, array('id' => $cm->id));
-    $table->define_columns(array('fullname', 'group', 'email', 'presence'));
-    $headers = array(
-        get_string('fullname'),
-        get_string('group'),
-        get_string('email'),
-        get_string('visio_presence', 'visio')
-    );
-    $table->define_headers($headers);
-    $table->set_attribute('id', 'visio');
-    $table->set_attribute('class', 'generaltable generalbox');
-    $table->pageable(false);
-    $table->setup();
-
-    $usersgroups = groups_get_user_groups($course->id, $USER->id);
-    foreach($usersgroups as $groups) {
-        foreach($groups as $group) {
-            $members = groups_get_members($group, 'u.id,u.firstname,u.lastname,u.email', 'u.id ASC');
-            foreach($members as $member) {
-                $ufields = user_picture::fields('u');
-                $userpic = new user_picture($USER);
-
-                $row = array(
-                    $OUTPUT->render($userpic) . $member->firstname . ' ' . $member->lastname,
-                    groups_get_group_name($group),
-                    $member->email,
-                    '<input type="checkbox" class="visio_checkbox">',
-                );
-                $table->add_data($row);
-            }
-        }
-    }
-}
-
 echo $OUTPUT->header();
 
 echo $OUTPUT->box_start('generalbox visiobox boxaligncenter');
@@ -127,10 +89,12 @@ if ($isteacher) {
     $config = get_config('mod_visio');
     $path = $config->connect_url . "/api/xml?action=common-info";
 
-    $PAGE->requires->js_call_amd('mod_visio/visio_actions', 'init', array($path, $room_url, get_string("access", "visio")));
+    $PAGE->requires->js_call_amd('mod_visio/visio_actions', 'init', array($path, $room_url, get_string('access', 'visio')));
     echo '<div id="mod_visio_receiver"></div>';
 
-    $table->print_html();
+    $renderable = new \mod_visio\output\visio_table($USER->id, $course->id);
+    $output = $PAGE->get_renderer('mod_visio');
+    echo $output->render($renderable);
 } else {
     // students
     $external_url = $room_url . '/?guestName=' . $USER->firstname . ' ' . $USER->lastname;

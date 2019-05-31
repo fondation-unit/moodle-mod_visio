@@ -15,16 +15,26 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Folder module version information
  *
- * @package    mod_visio
- * @copyright  2019 Pierre Duverneix - Fondation UNIT
+ * @package    
+ * @copyright  2019 Pierre Duverneix <pierre.duverneix@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace mod_visio\output;
+defined('MOODLE_INTERNAL') || die;
 
-defined('MOODLE_INTERNAL') || die();
+use plugin_renderer_base;
+use renderable;
 
-$plugin->version   = 2019051703;
-$plugin->requires  = 2017050500;
-$plugin->component = 'mod_visio';
-$plugin->cron      = 0;
+class renderer extends plugin_renderer_base {
+
+    /**
+     *
+     * @param \templatable $output
+     * @return string|boolean
+     */
+    public function render_visio_table(\templatable $output) {
+        $data = $output->export_for_template($this);
+        return $this->render_from_template('mod_visio/main', $data);
+    }
+}
