@@ -1,9 +1,11 @@
-define(['jquery', 'core/ajax', 'core/notification'],
-function($, ajax, notification) {
+define(['jquery', 'core/ajax', 'core/notification', 'core/str'],
+function($, ajax, notification, str) {
 
-    var ViewParticipation = function(selector, visioid) {
+    var ViewParticipation = function(selector, visioid, presentStr, missingStr) {
         this._region = $(selector);
         this._visioid = visioid;
+        this._presentStr = presentStr;
+        this._missingStr = missingStr;
         this._presence = [];
         this._checkboxes = $(selector).find('tbody').find('tr').find('[data-element="visio-checkbox"]');
 
@@ -39,12 +41,21 @@ function($, ajax, notification) {
 
     ViewParticipation.prototype._toggleUserPresence = function(e) {
         var elem = e.currentTarget;
-        if ($(elem).val()) {
-            this._attestUserPresence($(elem).val(), $(elem).prop('checked'));
+        var value = $(elem).val();
+        if (value) {
+            var fname = this._region.find('[data-element="visio-firstname"][value=' + value + ']').text();
+            var lname = this._region.find('[data-element="visio-lastname"][value=' + value + ']').text();
+            var name = fname + ' ' + lname;
+            this._attestUserPresence(value, $(elem).prop('checked'), name);
         }
     };
 
-    ViewParticipation.prototype._attestUserPresence = function(userid, state) {
+    ViewParticipation.prototype._attestUserPresence = function(userid, state, username) {
+        var string = {
+            name: username,
+            status: state == true ? this._presentStr : this._missingStr
+        };
+
         ajax.call([{
             methodname: 'mod_visio_set_presence',
             args: {
@@ -53,7 +64,13 @@ function($, ajax, notification) {
                 value: state == true ? 2 : 0
             },
             done: function() {
-                return true;
+                str.get_string('presence_updated', 'visio', string)
+                    .done(function(s) {
+                    notification.addNotification({
+                        message: s,
+                        type: "success"
+                    });
+                });
             },
             fail: notification.exception
         }]);

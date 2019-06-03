@@ -42,6 +42,9 @@ $string['late_access'] = 'Cette s&eacute;ance est termin&eacute;e';
 $string['min'] = 'minutes';
 $string['hour'] = 'heure';
 $string['hours'] = 'heures';
+$string['presence_updated'] = 'Présence de {$a->name} mise à jour : {$a->status}';
+$string['present_str'] = 'présent';
+$string['missing_str'] = 'absent';
 
 $string['connect_url'] = 'URL du serveur Adobe Connect';
 $string['connect_user'] = 'Login du compte h&ocirc;te';

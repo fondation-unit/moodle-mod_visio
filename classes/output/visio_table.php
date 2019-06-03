@@ -42,6 +42,8 @@ class visio_table implements renderable, templatable {
      * @return stdClass
      */
     public function export_for_template(renderer_base $output) {
+        global $USER;
+
         $data = array();
 
         $usersgroups = groups_get_user_groups($this->courseid, $this->userid);
@@ -50,14 +52,16 @@ class visio_table implements renderable, templatable {
             foreach ($groups as $group) {
                 $members = groups_get_members($group, 'u.id,u.firstname,u.lastname,u.email', 'u.id ASC');
                 foreach ($members as $member) {
-                    $row = new stdClass();
-                    $row->id = $member->id;
-                    $row->firstname = $member->firstname;
-                    $row->lastname = $member->lastname;
-                    $row->groups = groups_get_group_name($group);
-                    $row->email = $member->email;
+                    if ($USER->id != $member->id) { // Avoid adding the teachers in the table.
+                        $row = new stdClass();
+                        $row->id = $member->id;
+                        $row->firstname = $member->firstname;
+                        $row->lastname = $member->lastname;
+                        $row->groups = groups_get_group_name($group);
+                        $row->email = $member->email;
 
-                    $data[] = $row;
+                        $data[] = $row;
+                    }
                 }
             }
         }
@@ -65,7 +69,9 @@ class visio_table implements renderable, templatable {
         return [
             'hasUsers' => count($data) ? true : false,
             'users' => $data,
-            'visioid' => $this->visioid
+            'visioid' => $this->visioid,
+            'presentstr' => get_string('present_str', 'visio'),
+            'missingstr' => get_string('missing_str', 'visio')
         ];
     }
 }

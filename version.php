@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2019060305;
+$plugin->version   = 2019060309;
 $plugin->requires  = 2017050500;
 $plugin->component = 'mod_visio';
 $plugin->cron      = 0;
