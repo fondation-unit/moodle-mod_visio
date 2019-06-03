@@ -15,14 +15,9 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template block_ielcourses/main
-
-    This template renders the main content area for the ielcourses block.
-
-    Example context (json):
-    {}
+    @template mod_visio/main
 }}
-<div id="visio-table-{{uniqid}}" class="visio-table mt-4" data-region="visio-table">
+<div id="visio-table-{{uniqid}}" class="visio-table mt-5" data-region="visio-table">
     {{#hasUsers}}
         {{>mod_visio/participants_table}}
     {{/hasUsers}}

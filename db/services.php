@@ -39,5 +39,13 @@ $functions = array(
         'type'          => 'write',
         'ajax'          => true,
         'capabilities'  => 'mod/course:manageactivities'
+    ),
+    'mod_visio_get_presence' => array(
+        'classname'     => 'mod_visio_external',
+        'methodname'    => 'get_presence',
+        'description'   => 'Get the presence of users',
+        'type'          => 'read',
+        'ajax'          => true,
+        'capabilities'  => 'mod/course:manageactivities'
     )
 );

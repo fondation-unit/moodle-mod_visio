@@ -101,18 +101,49 @@ class mod_visio_external extends external_api {
     public static function set_presence_parameters() {
         return new external_function_parameters(  
             array(
-                'user_id' => new external_value(PARAM_INT, 'The user ID'),
-                'value' => new external_value(PARAM_BOOL, 'The presence value'),
+                'visioid' => new external_value(PARAM_INT, 'The visio ID'),
+                'userid' => new external_value(PARAM_INT, 'The user ID'),
+                'value' => new external_value(PARAM_INT, 'The presence value'),
             )
         );
     }
 
-    public static function set_presence($userid, $value) {
-        global $DB;
+    public static function set_presence($visioid, $userid, $value) {
+        global $DB, $USER;
 
         //Parameters validation.
         $params = self::validate_parameters(self::set_presence_parameters(), 
-            array('user_id' => $userid, 'value' => $value));
+            array('visioid' => $visioid, 'userid' => $userid, 'value' => $value));
+
+        $dataobject = new \stdClass();
+        $dataobject->visioid = $params['visioid'];
+        $dataobject->userid = $params['userid'];
+        $dataobject->value = $params['value'];
+        $dataobject->timecreated = \time();
+
+        // Check for presence.
+        $presence = $DB->get_record('visio_presence', array(
+            'visioid' => $params['visioid'],
+            'userid' => $params['userid']));
+
+        if (!$presence) {
+            $DB->insert_record('visio_presence', $dataobject, true);
+        } else {
+            if ($USER->id == $params['userid']) {
+                // The user indicates his presence by himself.
+                $presence->value = 1;
+                $DB->update_record('visio_presence', $presence);
+            } else {
+                // Teachers.
+                if ($params['value'] == 2) {
+                    $presence->value = 2;
+                    $DB->update_record('visio_presence', $presence);
+                } else {
+                    $presence->value = 0;
+                    $DB->update_record('visio_presence', $presence);
+                }
+            }
+        }
 
         return true;
     }
@@ -127,4 +158,47 @@ class mod_visio_external extends external_api {
         return new external_value(PARAM_BOOL, 'The presence of the user was defined');
     }
 
+
+    /**
+     * Describes the parameters for get_presence.
+     * 
+     * @return external_function_parameters
+     * @since  Moodle 3.4
+     */
+    public static function get_presence_parameters() {
+        return new external_function_parameters(  
+            array(
+                'visioid' => new external_value(PARAM_INT, 'The visio ID')
+            )
+        );
+    }
+
+    public static function get_presence($visioid) {
+        global $DB;
+
+        //Parameters validation.
+        $params = self::validate_parameters(self::get_presence_parameters(), 
+            array('visioid' => $visioid));
+
+        $data = $DB->get_records('visio_presence', array('visioid' => $params['visioid']));
+        return $data;
+    }
+
+    /**
+     * Returns description of method result value.
+     *
+     * @return external_description
+     * @since Moodle 3.4
+     */
+    public static function get_presence_returns() {
+        return new external_multiple_structure(new external_single_structure(
+            array(
+                'id' => new external_value(PARAM_INT, 'The component id.'),
+                'visioid' => new external_value(PARAM_RAW, 'The visio id.'),
+                'userid' => new external_value(PARAM_RAW, 'The user id.'),
+                'value' => new external_value(PARAM_RAW, 'Value of the presence.'),
+                'timecreated' => new external_value(PARAM_TEXT, 'Time created.'),
+            )
+        ));
+    }
 }

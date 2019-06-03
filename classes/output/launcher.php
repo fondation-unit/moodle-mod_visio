@@ -27,44 +27,50 @@ use renderer_base;
 use templatable;
 use stdClass;
 
-class visio_table implements renderable, templatable {
+class launcher implements renderable, templatable {
 
-    public function __construct($visioid, $userid, $courseid) {
+    public function __construct($visioid, $userid, $externalurl, $accesstime, $passedtime) {
         $this->visioid = $visioid;
         $this->userid = $userid;
-        $this->courseid = $courseid;
+        $this->externalurl = $externalurl;
+        $this->accesstime = $accesstime;
+        $this->passedtime = $passedtime;
     }
 
     /**
      * Export this data so it can be used as the context for a mustache template.
      *
-     * @param \renderer_base $output
+     * @param \renderer_base $launcher
      * @return stdClass
      */
-    public function export_for_template(renderer_base $output) {
-        $data = array();
+    public function export_for_template(renderer_base $launcher) {
+        $data = new stdClass();
+        $showbutton = false;
 
-        $usersgroups = groups_get_user_groups($this->courseid, $this->userid);
-
-        foreach ($usersgroups as $groups) {
-            foreach ($groups as $group) {
-                $members = groups_get_members($group, 'u.id,u.firstname,u.lastname,u.email', 'u.id ASC');
-                foreach ($members as $member) {
-                    $row = new stdClass();
-                    $row->id = $member->id;
-                    $row->firstname = $member->firstname;
-                    $row->lastname = $member->lastname;
-                    $row->groups = groups_get_group_name($group);
-                    $row->email = $member->email;
-
-                    $data[] = $row;
-                }
+        if (time() >= $this->passedtime) {
+            if (isset($this->externalurl)) {
+                $showbutton = true;
+                $data->url = $this->externalurl;
+                $data->str = get_string('broadcastview', 'visio');
+            } else {
+                $showbutton = false;
+                $data->url = '';
+                $data->str = get_string('late_access', 'visio');
             }
+        } else if ($this->accesstime <= time()) {
+            $showbutton = true;
+            $data->url = $this->externalurl;
+            $data->str = get_string('modulename', 'visio');
+        } else {
+            $showbutton = false;
+            $data->url = '';
+            $data->str = get_string('early_access', 'visio');
         }
 
         return [
-            'hasUsers' => count($data) ? true : false,
-            'users' => $data,
+            'showButton' => $showbutton,
+            'data' => $data,
+            'currentuser' => $this->userid,
             'visioid' => $this->visioid
         ];
     }

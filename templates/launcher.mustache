@@ -1,0 +1,16 @@
+<div id="visio-launcher" class="visio-launcher" data-region="visio-launcher">
+    {{#showButton}}
+        <a href="{{{data.url}}}" 
+            class="btn btn-primary" 
+            data-action="launch-visio"
+            target="_blank">{{{data.str}}}</a>
+    {{/showButton}}
+    {{^showButton}}
+        <span class="alert alert-info">{{{data.str}}}</span>
+    {{/showButton}}
+</div>
+{{#js}}
+require(['mod_visio/participation'], function(Participation) {
+    new Participation('[data-region="visio-launcher"]', {{visioid}}, {{currentuser}});
+});
+{{/js}}

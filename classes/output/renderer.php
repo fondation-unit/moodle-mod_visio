@@ -30,6 +30,16 @@ class renderer extends plugin_renderer_base {
 
     /**
      *
+     * @param \templatable $launcher
+     * @return string|boolean
+     */
+    public function render_launcher(\templatable $launcher) {
+        $data = $launcher->export_for_template($this);
+        return $this->render_from_template('mod_visio/launcher', $data);
+    }
+
+    /**
+     *
      * @param \templatable $output
      * @return string|boolean
      */

@@ -92,42 +92,16 @@ if ($isteacher) {
     $PAGE->requires->js_call_amd('mod_visio/visio_actions', 'init', array($path, $room_url, get_string('access', 'visio')));
     echo '<div id="mod_visio_receiver"></div>';
 
-    $renderable = new \mod_visio\output\visio_table($USER->id, $course->id);
+    $renderable = new \mod_visio\output\visio_table($visio->id, $USER->id, $course->id);
     $output = $PAGE->get_renderer('mod_visio');
     echo $output->render($renderable);
 } else {
     // students
     $external_url = $room_url . '/?guestName=' . $USER->firstname . ' ' . $USER->lastname;
 
-    if (time() >= $passed_visio) {
-        if (isset($visio->broadcasturl)) {
-            echo html_writer::start_tag('a',
-                array(
-                    'href' => $visio->broadcasturl,
-                    'class' => '',
-                    'target' => '_blank',
-                    'title' => get_string('broadcastview', 'visio'),
-                )
-            );
-            echo get_string('broadcastview', 'visio');
-            echo html_writer::end_tag('a');
-        } else {
-            echo html_writer::div('<span class="alert alert-info">'.get_string('late_access', 'visio').'</span>');
-        }
-    } else if ($access_time <= time()) {
-        echo html_writer::start_tag('a',
-            array(
-                'href' => $external_url,
-                'class' => 'btn btn-primary',
-                'target' => '_blank',
-                'title' => get_string("modulename", "visio"),
-            )
-        );
-        echo get_string("access", "visio");
-        echo html_writer::end_tag('a');
-    } else {
-        echo html_writer::div('<span class="alert alert-info">'.get_string('early_access', 'visio').'</span>');
-    }
+    $launcher = new \mod_visio\output\launcher($visio->id, $USER->id, $external_url, $access_time, $passed_visio);
+    $launcherout = $PAGE->get_renderer('mod_visio');
+    echo $launcherout->render($launcher);
 }
 echo $OUTPUT->box_end();
 
