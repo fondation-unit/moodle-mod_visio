@@ -7,9 +7,9 @@ define(['jquery', 'core/ajax', 'core/notification'],
         this._userid = userid;
 
         this._region.find('[data-action="launch-visio"]').on('click', this._handleLaunchVisio.bind(this));
-    }
+    };
 
-    Participation.prototype._handleLaunchVisio = function(e) {
+    Participation.prototype._handleLaunchVisio = function() {
         this._setUserPresence();
     };
 

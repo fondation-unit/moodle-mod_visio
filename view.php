@@ -62,8 +62,8 @@ $isteacher = has_capability('gradereport/grader:view', $context);
 echo $OUTPUT->header();
 
 echo $OUTPUT->box_start('generalbox visiobox boxaligncenter');
-echo '<h2>'.get_string("modulename", "visio").'</h2>';
-echo '<h4>'.$visio->name.'</h4>';
+echo '<h5>'.$OUTPUT->image_icon('icon', 'mod', 'visio').get_string("modulename", "visio").'</h5>';
+echo '<h2 class="mb-4">'.$visio->name.'</h2>';
 
 if ($visio->intro != "") {
     echo html_writer::div(
@@ -99,7 +99,7 @@ if ($isteacher) {
     // students
     $external_url = $room_url . '/?guestName=' . $USER->firstname . ' ' . $USER->lastname;
 
-    $launcher = new \mod_visio\output\launcher($visio->id, $USER->id, $external_url, $access_time, $passed_visio);
+    $launcher = new \mod_visio\output\launcher($visio->id, $USER->id, $external_url, $visio->broadcasturl, $access_time, $passed_visio);
     $launcherout = $PAGE->get_renderer('mod_visio');
     echo $launcherout->render($launcher);
 }

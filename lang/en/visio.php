@@ -31,6 +31,7 @@ $string['duration'] = 'Dur&eacute;e';
 $string['broadcasturl'] = 'Lien de rediffusion';
 $string['broadcasturl_help'] = 'Stocke le lien de rediffusion de la web-conférence, une fois celle-ci terminée. Faire la demande aux administrateurs.';
 $string['broadcastview'] = 'Voir la rediffusion';
+$string['broadcastsoon'] = 'La rediffusion n&rsquo;est pas encore disponible.';
 $string['access'] = 'Acc&eacute;der &agrave; la visio-conf&eacute;rence';
 $string['calendar_event'] = 'Visio';
 $string['calendar_site_event'] = '&#x1f4fa; Visio';

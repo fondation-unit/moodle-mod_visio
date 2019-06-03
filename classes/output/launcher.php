@@ -29,10 +29,11 @@ use stdClass;
 
 class launcher implements renderable, templatable {
 
-    public function __construct($visioid, $userid, $externalurl, $accesstime, $passedtime) {
+    public function __construct($visioid, $userid, $externalurl, $broadcasturl, $accesstime, $passedtime) {
         $this->visioid = $visioid;
         $this->userid = $userid;
         $this->externalurl = $externalurl;
+        $this->broadcasturl = $broadcasturl;
         $this->accesstime = $accesstime;
         $this->passedtime = $passedtime;
     }
@@ -49,9 +50,14 @@ class launcher implements renderable, templatable {
 
         if (time() >= $this->passedtime) {
             if (isset($this->externalurl)) {
-                $showbutton = true;
-                $data->url = $this->externalurl;
-                $data->str = get_string('broadcastview', 'visio');
+                if ($this->broadcasturl != '') {
+                    $showbutton = true;
+                    $data->url = $this->broadcasturl;
+                    $data->str = get_string('broadcastview', 'visio');
+                } else {
+                    $showbutton = false;
+                    $data->str = get_string('broadcastsoon', 'visio');
+                }
             } else {
                 $showbutton = false;
                 $data->url = '';

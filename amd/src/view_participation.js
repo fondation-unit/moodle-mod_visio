@@ -9,9 +9,7 @@ define(['jquery', 'core/ajax', 'core/notification'],
 
         this._checkboxes.on('click', this._toggleUserPresence.bind(this));
         this._getUsersPresence();
-
-        setInterval(this._getUsersPresence(), 5000);
-    }
+    };
 
     ViewParticipation.prototype._getUsersPresence = function() {
         ajax.call([{
@@ -37,7 +35,7 @@ define(['jquery', 'core/ajax', 'core/notification'],
                 row.prop('checked', false);
             }
         });
-    }
+    };
 
     ViewParticipation.prototype._toggleUserPresence = function(e) {
         var elem = e.currentTarget;
