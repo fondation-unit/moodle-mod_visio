@@ -10,7 +10,14 @@ function($, ajax, notification, str) {
         this._checkboxes = $(selector).find('tbody').find('tr').find('[data-element="visio-checkbox"]');
 
         this._checkboxes.on('click', this._toggleUserPresence.bind(this));
+        this._setup();
         this._getUsersPresence();
+    };
+
+    ViewParticipation.prototype._setup = function() {
+        if ($('#user-notifications').length) {
+            $('#user-notifications').appendTo('#notifications-area');
+        }
     };
 
     ViewParticipation.prototype._getUsersPresence = function() {
@@ -51,11 +58,6 @@ function($, ajax, notification, str) {
     };
 
     ViewParticipation.prototype._attestUserPresence = function(userid, state, username) {
-        var string = {
-            name: username,
-            status: state == true ? this._presentStr : this._missingStr
-        };
-
         ajax.call([{
             methodname: 'mod_visio_set_presence',
             args: {
@@ -63,7 +65,13 @@ function($, ajax, notification, str) {
                 userid: userid,
                 value: state == true ? 2 : 0
             },
-            done: function() {
+            done: function(data) {
+                var string = {
+                    name: username,
+                    status: state == true ? this._presentStr : this._missingStr,
+                    time: data
+                };
+
                 str.get_string('presence_updated', 'visio', string)
                     .done(function(s) {
                     notification.addNotification({

@@ -34,6 +34,7 @@
     {{/users}}
     </tbody>
 </table>
+<div id="notifications-area"></div>
 {{#js}}
 require(['mod_visio/view_participation'], function(ViewParticipation) {
     new ViewParticipation('[data-region="visio-participation"]', {{visioid}}, '{{presentstr}}', '{{missingstr}}');

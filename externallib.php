@@ -148,7 +148,7 @@ class mod_visio_external extends external_api {
             }
         }
 
-        return true;
+        return date('d/m/Y H:i:s', time());
     }
 
     /**
@@ -158,7 +158,7 @@ class mod_visio_external extends external_api {
      * @since Moodle 3.4
      */
     public static function set_presence_returns() {
-        return new external_value(PARAM_BOOL, 'The presence of the user was defined');
+        return new external_value(PARAM_TEXT, 'The time the presence was set');
     }
 
 

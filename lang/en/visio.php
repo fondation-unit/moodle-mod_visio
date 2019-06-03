@@ -42,7 +42,7 @@ $string['late_access'] = 'Cette s&eacute;ance est termin&eacute;e';
 $string['min'] = 'minutes';
 $string['hour'] = 'heure';
 $string['hours'] = 'heures';
-$string['presence_updated'] = 'Présence de {$a->name} mise à jour : {$a->status}';
+$string['presence_updated'] = '{$a->time} Présence de {$a->name} mise à jour : {$a->status}';
 $string['present_str'] = 'présent';
 $string['missing_str'] = 'absent';
 
