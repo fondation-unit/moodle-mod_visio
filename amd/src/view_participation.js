@@ -1,5 +1,5 @@
 define(['jquery', 'core/ajax', 'core/notification'],
-        function($, ajax, notification) {
+function($, ajax, notification) {
 
     var ViewParticipation = function(selector, visioid) {
         this._region = $(selector);
@@ -26,7 +26,7 @@ define(['jquery', 'core/ajax', 'core/notification'],
     ViewParticipation.prototype._setPresenceInTable = function() {
         var rows = this._region.find('tbody').find('tr');
         this._presence.forEach(function(element) {
-            var row = rows.find('[data-element="visio-checkbox"][value='+ element.userid +']');
+            var row = rows.find('[data-element="visio-checkbox"][value=' + element.userid + ']');
             if (row && element.value == 1) {
                 row.prop('indeterminate', true);
             } else if (row && element.value == 2) {

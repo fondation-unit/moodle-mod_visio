@@ -22,6 +22,7 @@
  */
 
 namespace mod_visio\task;
+defined('MOODLE_INTERNAL') || die;
 
 class visio_reminder extends \core\task\scheduled_task {
 

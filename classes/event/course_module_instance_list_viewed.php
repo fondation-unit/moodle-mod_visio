@@ -19,7 +19,7 @@
  * @package    mod_visio
  * @copyright  2019 Pierre Duverneix - Fondation UNIT
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */ 
+ */
 
 namespace mod_visio\event;
 defined('MOODLE_INTERNAL') || die();
@@ -29,4 +29,3 @@ defined('MOODLE_INTERNAL') || die();
  */
 class course_module_instance_list_viewed extends \core\event\course_module_instance_list_viewed {
 }
-

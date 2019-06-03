@@ -31,7 +31,7 @@ function visio_add_instance($data, $mform) {
     global $CFG, $DB, $USER;
 
     $parameters = array();
-    for ($i=0; $i < 100; $i++) {
+    for ($i = 0; $i < 100; $i++) {
         $parameter = "parameter_$i";
         $variable  = "variable_$i";
         if (empty($data->$parameter) or empty($data->$variable)) {
@@ -55,7 +55,8 @@ function visio_add_instance($data, $mform) {
     $body = '<p>'.get_string('messageprovider:submission', 'visio').'</p>';
     $body .= '<p><strong>'.$visio->name.'</strong></p>';
     $body .= '<p>'.$visio->intro.'</p>';
-    $body .= '<p><strong>'.get_string("starttime", "visio").'</strong> : '.date('d/m/Y', $visio->starttime).' - '.date('H:i', $visio->starttime);
+    $body .= '<p><strong>'.get_string("starttime", "visio").'</strong> : ';
+    $body .= date('d/m/Y', $visio->starttime).' - '.date('H:i', $visio->starttime);
     $body .= '<br><strong>'.get_string("duration", "visio").'</strong> : '.gmdate('H:i', $visio->duration).'</p>';
 
     send_visio_notifications($USER, $data->course, $data->coursemodule, $subject, $body, $data->name);
@@ -68,7 +69,7 @@ function visio_update_instance($data, $mform) {
     global $CFG, $DB, $USER;
 
     $parameters = array();
-    for ($i=0; $i < 100; $i++) {
+    for ($i = 0; $i < 100; $i++) {
         $parameter = "parameter_$i";
         $variable  = "variable_$i";
         if (empty($data->$parameter) or empty($data->$variable)) {
@@ -80,9 +81,9 @@ function visio_update_instance($data, $mform) {
 
     $data->timemodified = time();
     $data->id           = $data->instance;
-    
+
     $DB->update_record('visio', $data);
-    visio_update_events($data);    
+    visio_update_events($data);
 
     $completiontimeexpected = !empty($data->completionexpected) ? $data->completionexpected : null;
     \core_completion\api::update_completion_date_event($data->coursemodule, 'visio', $data->id, $completiontimeexpected);
@@ -92,7 +93,8 @@ function visio_update_instance($data, $mform) {
     $body = '<p>'.get_string('messageprovider:submissionupdated', 'visio').'</p>';
     $body .= '<p><strong>'.$visio->name.'</strong></p>';
     $body .= '<p>'.$visio->intro.'</p>';
-    $body .= '<p><strong>'.get_string("starttime", "visio").'</strong> : '.date('d/m/Y', $visio->starttime).' - '.date('H:i', $visio->starttime);
+    $body .= '<p><strong>'.get_string("starttime", "visio").'</strong> : ';
+    $body .= date('d/m/Y', $visio->starttime).' - '.date('H:i', $visio->starttime);
     $body .= '<br><strong>'.get_string("duration", "visio").'</strong> : '.gmdate('H:i', $visio->duration).'</p>';
 
     send_visio_notifications($USER, $data->course, $data->coursemodule, $subject, $body, $data->name);
@@ -112,12 +114,12 @@ function visio_delete_instance($id) {
 
     $subject = get_string('nofiticationdeletion', 'visio');
     $body = get_string('messageprovider:notificationdeletion', 'visio');
-    
+
     send_visio_notifications($USER, $visio->course, $visio->id, $subject, $body, $visio->name);
 
     $DB->delete_records('event', array('modulename' => 'visio', 'instance' => $visio->id));
     $DB->delete_records('visio', array('id' => $visio->id));
-    
+
     return true;
 }
 
@@ -155,8 +157,8 @@ function set_event($data) {
     global $USER;
 
     $event = new stdClass();
-    $event->eventtype = VISIO_EVENT_TYPE_OPEN; // Constant defined somewhere in your code - this can be any string value you want. It is a way to identify the event.
-    $event->type = CALENDAR_EVENT_TYPE_STANDARD; // This is used for events we only want to display on the calendar, and are not needed on the block_myoverview.
+    $event->eventtype = VISIO_EVENT_TYPE_OPEN;
+    $event->type = CALENDAR_EVENT_TYPE_STANDARD;
     $event->name = get_string('calendar_event', 'mod_visio', $data->name);
     $event->description = $data->intro . "<br><p>Enseignant : ".$USER->firstname." ".$USER->lastname." - ".$USER->email."</p>";
     $event->courseid = $data->course;
@@ -167,7 +169,7 @@ function set_event($data) {
     $event->timestart = $data->starttime;
     $event->visible = 1;
     $event->timeduration = $data->duration;
-     
+
     calendar_event::create($event);
 }
 
@@ -178,7 +180,7 @@ function visio_update_events($data) {
     $conds = array('modulename' => 'visio', 'instance' => $data->instance);
     $oldevents = $DB->get_records('event', $conds, 'id ASC');
 
-    foreach($oldevents as $event) {
+    foreach ($oldevents as $event) {
         $evt = calendar_event::load($event->id);
         $evt->name = get_string('calendar_event', 'mod_visio', $data->name);
         $evt->description = $data->intro;

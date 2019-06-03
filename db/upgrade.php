@@ -28,7 +28,6 @@ function xmldb_visio_upgrade($oldversion) {
     $dbman = $DB->get_manager();
 
     if ($oldversion < 2019050700) {
-        
         // Changing type of field value on table lti_types_config to text.
         $table = new xmldb_table('visio');
         $field = new xmldb_field('broadcasturl', XMLDB_TYPE_CHAR, '255', null, null, null, null);
@@ -64,7 +63,7 @@ function xmldb_visio_upgrade($oldversion) {
 
     if ($oldversion < 2019060300) {
         $table = new xmldb_table('visio_presence');
-        
+
         if ($dbman->table_exists($table)) {
             $dbman->drop_table($table);
         }

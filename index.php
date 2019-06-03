@@ -26,11 +26,11 @@ require_once("lib.php");
 
 $id = required_param('id', PARAM_INT);
 
-$url = new moodle_url('/mod/visio/index.php', array('id'=>$id));
+$url = new moodle_url('/mod/visio/index.php', array('id' => $id));
 
 $PAGE->set_url($url);
 
-if (!$course = $DB->get_record('course', array('id'=>$id))) {
+if (!$course = $DB->get_record('course', array('id' => $id))) {
     print_error('invalidcourseid');
 }
 
@@ -52,10 +52,10 @@ $PAGE->set_title($strvisio);
 echo $OUTPUT->header();
 echo $OUTPUT->heading($strvisio);
 
-/// Get all the appropriate data
+// Get all the appropriate data.
 
 if (! $visios = get_all_instances_in_course("visio", $course)) {
-    $url = new moodle_url('/course/view.php', array('id'=>$course->id));
+    $url = new moodle_url('/course/view.php', array('id' => $course->id));
     notice(get_string('thereareno', 'moodle', $strvisio), $url);
     die;
 }

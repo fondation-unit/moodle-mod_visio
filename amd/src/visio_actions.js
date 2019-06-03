@@ -1,7 +1,7 @@
 define([
     'core/ajax',
     'core/notification'],
-    function(ajax, notification) {
+function(ajax, notification) {
 
     var Visio = function(url, roomUrl, accessString) {
         var container = document.getElementById('mod_visio_receiver');
@@ -20,9 +20,9 @@ define([
 
                     container.appendChild(button);
                 },
-                fail: function(ex) {
-                    notification.exception(ex);
-                }
+            fail: function(ex) {
+                notification.exception(ex);
+            }
             }], true);
     };
 

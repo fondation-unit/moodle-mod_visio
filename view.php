@@ -29,26 +29,26 @@ require_once($CFG->dirroot . '/enrol/externallib.php');
 
 define('DEFAULT_PAGE_SIZE', 10); // Number of page to show.
 $perpage = DEFAULT_PAGE_SIZE;
-$id       = optional_param('id', 0, PARAM_INT);        // Course module ID
-$u        = optional_param('u', 0, PARAM_INT);         // URL instance id
+$id       = optional_param('id', 0, PARAM_INT);        // Course module ID.
+$u        = optional_param('u', 0, PARAM_INT);         // URL instance id.
 $redirect = optional_param('redirect', 0, PARAM_BOOL);
 
-if ($u) {  // Two ways to specify the module
-    $visio = $DB->get_record('visio', array('id'=>$u), '*', MUST_EXIST);
+if ($u) {  // Two ways to specify the module.
+    $visio = $DB->get_record('visio', array('id' => $u), '*', MUST_EXIST);
     $cm = get_coursemodule_from_instance('visio', $visio->id, $visio->course, false, MUST_EXIST);
 
 } else {
     $cm = get_coursemodule_from_id('visio', $id, 0, false, MUST_EXIST);
-    $visio = $DB->get_record('visio', array('id'=>$cm->instance), '*', MUST_EXIST);
+    $visio = $DB->get_record('visio', array('id' => $cm->instance), '*', MUST_EXIST);
 }
 
-$course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
+$course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 
 require_course_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/visio:view', $context);
 
-/// Print the page header
+// Print the page header.
 $url = new moodle_url('/mod/visio/view.php', array('id' => $cm->id));
 
 $PAGE->set_url($url);
@@ -71,35 +71,36 @@ if ($visio->intro != "") {
     );
 }
 
+$startstr = get_string("starttime", "visio");
 echo html_writer::div(
-	'<p><strong>'.get_string("starttime", "visio").'</strong> : le '.date('d/m/Y', $visio->starttime).' &agrave; '.date('H:i', $visio->starttime).'</p>'
+    '<p><strong>'.$startstr.'</strong> : le '.date('d/m/Y', $visio->starttime).' &agrave; '.date('H:i', $visio->starttime).'</p>'
 );
 echo html_writer::div(
-	'<p><strong>'.get_string("duration", "visio").'</strong> : '.gmdate('H:i', $visio->duration).'</p>'
+    '<p><strong>'.get_string("duration", "visio").'</strong> : '.gmdate('H:i', $visio->duration).'</p>'
 );
 
-$access_time = intval($visio->starttime)-900;
-$passed_visio = intval($visio->starttime + $visio->duration)+900;
-$room_url = get_visio_url($visio);
+$accesstime = intval($visio->starttime) - 900;
+$passedtime = intval($visio->starttime + $visio->duration) + 900;
+$roomurl = get_visio_url($visio);
 
 echo html_writer::div('<p>&nbsp;</p>');
 
 if ($isteacher) {
-    // if $USER is the course teacher
+    // If $USER is the course teacher.
     $config = get_config('mod_visio');
     $path = $config->connect_url . "/api/xml?action=common-info";
 
-    $PAGE->requires->js_call_amd('mod_visio/visio_actions', 'init', array($path, $room_url, get_string('access', 'visio')));
+    $PAGE->requires->js_call_amd('mod_visio/visio_actions', 'init', array($path, $roomurl, get_string('access', 'visio')));
     echo '<div id="mod_visio_receiver"></div>';
 
     $renderable = new \mod_visio\output\visio_table($visio->id, $USER->id, $course->id);
     $output = $PAGE->get_renderer('mod_visio');
     echo $output->render($renderable);
 } else {
-    // students
-    $external_url = $room_url . '/?guestName=' . $USER->firstname . ' ' . $USER->lastname;
+    // Students.
+    $externalurl = $roomurl . '/?guestName=' . $USER->firstname . ' ' . $USER->lastname;
 
-    $launcher = new \mod_visio\output\launcher($visio->id, $USER->id, $external_url, $visio->broadcasturl, $access_time, $passed_visio);
+    $launcher = new \mod_visio\output\launcher($visio->id, $USER->id, $externalurl, $visio->broadcasturl, $accesstime, $passedtime);
     $launcherout = $PAGE->get_renderer('mod_visio');
     echo $launcherout->render($launcher);
 }

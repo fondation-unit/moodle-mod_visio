@@ -27,16 +27,15 @@ require_once($CFG->dirroot.'/course/moodleform_mod.php');
 require_once($CFG->dirroot.'/calendar/lib.php');
 
 class mod_visio_mod_form extends moodleform_mod {
-    
-    function definition() {
+
+    public function definition() {
         global $CFG, $DB;
         $mform =& $this->_form;
 
         $config = get_config('mod_visio');
-        
-        //-------------------------------------------------------
+
         $mform->addElement('header', 'general', get_string('general', 'form'));
-        $mform->addElement('text', 'name', get_string('name'), array('size'=>'48'));
+        $mform->addElement('text', 'name', get_string('name'), array('size' => '48'));
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
         } else {
@@ -44,7 +43,7 @@ class mod_visio_mod_form extends moodleform_mod {
         }
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
-        
+
         $this->standard_intro_elements();
         $element = $mform->getElement('introeditor');
         $attributes = $element->getAttributes();
@@ -54,9 +53,7 @@ class mod_visio_mod_form extends moodleform_mod {
         $mform->addRule('introeditor', null, 'required', null, 'client');
         $mform->addRule('introeditor', null, 'required', null, 'server');
 
-        //-------------------------------------------------------
-
-        // Start and end date selectors
+        // Start and end date selectors.
         $time       = time();
         $starttime  = usertime($time);
         $mform->addElement('date_time_selector', 'starttime', get_string('starttime', 'visio'));
@@ -71,25 +68,22 @@ class mod_visio_mod_form extends moodleform_mod {
         );
         $mform->addElement('select', 'duration', get_string('duration', 'visio'), $options);
         $mform->addRule('duration', null, 'required', null, 'client');
-       
-        $mform->addElement('text', 'broadcasturl', get_string('broadcasturl', 'visio'), array('size'=>'48'));
+
+        $mform->addElement('text', 'broadcasturl', get_string('broadcasturl', 'visio'), array('size' => '48'));
         $mform->setType('broadcasturl', PARAM_RAW_TRIMMED);
         $mform->addHelpButton('broadcasturl', 'broadcasturl', 'visio');
 
-        //-------------------------------------------------------
         $this->standard_coursemodule_elements();
-
-        //-------------------------------------------------------
         $this->add_action_buttons();
     }
 
-    function data_preprocessing(&$default_values) {
-        if (!empty($default_values['parameters'])) {
-            $parameters = unserialize($default_values['parameters']);
+    public function data_preprocessing(&$defaultvalues) {
+        if (!empty($defaultvalues['parameters'])) {
+            $parameters = unserialize($defaultvalues['parameters']);
             $i = 0;
-            foreach ($parameters as $parameter=>$variable) {
-                $default_values['parameter_'.$i] = $parameter;
-                $default_values['variable_'.$i]  = $variable;
+            foreach ($parameters as $parameter => $variable) {
+                $defaultvalues['parameter_'.$i] = $parameter;
+                $defaultvalues['variable_'.$i]  = $variable;
                 $i++;
             }
         }
@@ -102,27 +96,27 @@ class mod_visio_mod_form extends moodleform_mod {
      * @param array $files array of uploaded files "element_name"=>tmp_file_path
      * @return array
      **/
-    function validation($data, $files) {
+    public function validation($data, $files) {
         global $DB;
         $config = get_config('mod_visio');
         $mform =& $this->_form;
         $errors = parent::validation($data, $files);
 
         $sql = "SELECT * FROM {event} WHERE eventtype = 'visio_conf' AND timestart BETWEEN ? AND ?";
-        $start = strval(intval($data['starttime'])-900);
-        $end = strval(intval($data['starttime'] + $data['duration'])+900);
+        $start = strval(intval($data['starttime']) - 900);
+        $end = strval(intval($data['starttime'] + $data['duration']) + 900);
 
         $events = $DB->get_records_sql($sql, array($start, $end));
-        $room_id = count($events)+1;
+        $roomid = count($events) + 1;
         if (!empty($events)) {
-	    // if the maximum number of rooms is already reached
+            // If the maximum number of rooms is already reached.
             if (count($events) >= $config->roomsnumber) {
                 $errors['starttime'] = get_string('date_taken', 'visio');
             } else {
-                $mform->addElement('hidden', 'roomurl', $config->{'room'.$room_id});
+                $mform->addElement('hidden', 'roomurl', $config->{'room'.$roomid});
             }
         } else {
-            $mform->addElement('hidden', 'roomurl', $config->{'room'.$room_id});
+            $mform->addElement('hidden', 'roomurl', $config->{'room'.$roomid});
         }
 
         return $errors;

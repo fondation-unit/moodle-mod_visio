@@ -1,5 +1,5 @@
 define(['jquery', 'core/ajax', 'core/notification'],
-        function($, ajax, notification) {
+function($, ajax, notification) {
 
     var Participation = function(selector, visioid, userid) {
         this._region = $(selector);
