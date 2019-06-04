@@ -1,5 +1,8 @@
 define(['jquery', 'core/ajax', 'core/notification', 'core/str'],
 function($, ajax, notification, str) {
+    var INTERVAL = 30000;
+    var timeout = null;
+    var currentReq = null;
 
     var ViewParticipation = function(selector, visioid, presentStr, missingStr) {
         this._region = $(selector);
@@ -21,15 +24,22 @@ function($, ajax, notification, str) {
     };
 
     ViewParticipation.prototype._getUsersPresence = function() {
-        ajax.call([{
-            methodname: 'mod_visio_get_presence',
-            args: { visioid: this._visioid },
-            done: function(data) {
-                this._presence = data;
-                this._setPresenceInTable();
-            }.bind(this),
-            fail: notification.exception
-        }]);
+        currentReq = ajax.call([
+            { methodname: 'mod_visio_get_presence', args: { visioid: this._visioid } }
+        ]);
+
+        currentReq[0].done(function(response) {
+            this._presence = response;
+            this._setPresenceInTable();
+        }.bind(this))
+        .fail(notification.exception)
+        .always(function(){
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+            currentReq = null;
+            timeout = setTimeout(this._getUsersPresence.bind(this), INTERVAL);
+        }.bind(this));
     };
 
     ViewParticipation.prototype._setPresenceInTable = function() {
