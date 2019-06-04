@@ -82,22 +82,23 @@ function visio_update_instance($data, $mform) {
     $data->timemodified = time();
     $data->id           = $data->instance;
 
+    // Get the visio object before update to check the broadcast URL.
+    $oldvisio = $DB->get_record('visio', array('id' => $data->id), '*', MUST_EXIST);
+
     $DB->update_record('visio', $data);
     visio_update_events($data);
 
     $completiontimeexpected = !empty($data->completionexpected) ? $data->completionexpected : null;
     \core_completion\api::update_completion_date_event($data->coursemodule, 'visio', $data->id, $completiontimeexpected);
 
-    $visio = $DB->get_record('visio', array('id' => $data->id), '*', MUST_EXIST);
-    $subject = get_string('nofiticationsubjectupdate', 'visio');
-    $body = '<p>'.get_string('messageprovider:submissionupdated', 'visio').'</p>';
-    $body .= '<p><strong>'.$visio->name.'</strong></p>';
-    $body .= '<p>'.$visio->intro.'</p>';
-    $body .= '<p><strong>'.get_string("starttime", "visio").'</strong> : ';
-    $body .= date('d/m/Y', $visio->starttime).' - '.date('H:i', $visio->starttime);
-    $body .= '<br><strong>'.get_string("duration", "visio").'</strong> : '.gmdate('H:i', $visio->duration).'</p>';
+    // Send notification if a broadcast URL has been added.
+    if ($oldvisio->broadcasturl != $data->broadcasturl) {
+        $subject = get_string('notificationbroadcast', 'visio');
+        $body = '<p>'.get_string('messageprovider:broadcastadded', 'visio').'</p>';
+        $body .= '<p><strong>'.$data->name.'</strong></p>';
 
-    send_visio_notifications($USER, $data->course, $data->coursemodule, $subject, $body, $data->name);
+        send_visio_notifications($USER, $data->course, $data->coursemodule, $subject, $body, $data->name);
+    }
 
     return true;
 }

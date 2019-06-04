@@ -86,10 +86,9 @@ function send_visio_notifications($userfrom, $courseid, $instanceid, $subject, $
     } else {
         $coursecontext = context_course::instance($courseid);
         $users = get_enrolled_users($coursecontext, '', 0, 'u.*', '', 0, 0);
-        $str = get_string('messageprovider:submissionupdated', 'visio');
 
         foreach ($users as $user) {
-            $message = prepare_message($userfrom, $user, $courseid, $instanceid, $subject, $str, $name);
+            $message = prepare_message($userfrom, $user, $courseid, $instanceid, $subject, $body, $name);
             message_send($message);
         }
     }

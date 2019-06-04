@@ -89,8 +89,13 @@ if ($isteacher) {
     // If $USER is the course teacher.
     $config = get_config('mod_visio');
     $path = $config->connect_url . "/api/xml?action=common-info";
+    $ispassed = \time() > $passedtime;
 
-    $PAGE->requires->js_call_amd('mod_visio/visio_actions', 'init', array($path, $roomurl, get_string('access', 'visio')));
+    if (!$ispassed) {
+        $PAGE->requires->js_call_amd('mod_visio/visio_actions', 'init', array($path, $roomurl, $ispassed));
+    } else {
+        $PAGE->requires->js_call_amd('mod_visio/visio_actions', 'init', array($path, $visio->broadcasturl, $ispassed));
+    }
     echo '<div id="mod_visio_receiver"></div>';
 
     $renderable = new \mod_visio\output\visio_table($visio->id, $USER->id, $course->id);

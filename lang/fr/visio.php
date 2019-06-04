@@ -31,7 +31,7 @@ $string['duration'] = 'Dur&eacute;e';
 $string['broadcasturl'] = 'Lien de rediffusion';
 $string['broadcasturl_help'] = 'Stocke le lien de rediffusion de la web-conférence, une fois celle-ci terminée. Faire la demande aux administrateurs.';
 $string['broadcastview'] = 'Voir la rediffusion';
-$string['broadcastsoon'] = 'La rediffusion n&rsquo;est pas encore disponible.';
+$string['broadcastsoon'] = 'La rediffusion n&rsquo;est pas encore disponible';
 $string['access'] = 'Acc&eacute;der &agrave; la visio-conf&eacute;rence';
 $string['calendar_event'] = 'Visio';
 $string['calendar_site_event'] = '&#x1f4fa; Visio';
@@ -63,10 +63,11 @@ $string['visio_presence'] = 'Présence';
 
 $string['crontask'] = 'Notifications de visios.';
 
-$string['messageprovider:beginsoon'] = '<p>Une web-conférence démarre bientôt.</p>';
-$string['messageprovider:submission'] = '<p>Une web-conférence a été ajoutée par un tuteur.</p>';
-$string['messageprovider:submissionupdated'] = '<p>Une web-conférence a été mise à jour par un tuteur.</p>';
-$string['messageprovider:submissiondeletion'] = '<p>Une web-conférence a été supprimée par un tuteur.</p>';
+$string['messageprovider:beginsoon'] = 'Une web-conférence démarre bientôt';
+$string['messageprovider:submission'] = 'Une web-conférence a été ajoutée par un tuteur';
+$string['messageprovider:broadcastadded'] = 'Une rediffusion de web-conférence a été ajoutée';
+$string['messageprovider:submissionupdated'] = 'Une web-conférence a été mise à jour';
+$string['messageprovider:submissiondeletion'] = 'Une web-conférence a été supprimée par un tuteur';
 $string['nofiticationsubject'] = 'Nouvelle web-conférence';
-$string['nofiticationsubjectupdate'] = 'Mise à jour de web-conférence';
+$string['notificationbroadcast'] = 'Ajout d’une rediffusion';
 $string['nofiticationdeletion'] = 'Annulation de web-conférence';
