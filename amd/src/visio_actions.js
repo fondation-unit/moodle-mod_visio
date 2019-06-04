@@ -29,9 +29,17 @@ function(ajax, notification, str) {
                 args: { url: url },
                 done: function(data) {
                     if (roomUrl != '') {
-                        button.addEventListener('click', function() {
-                            window.open(roomUrl + "/?session=" + data);
-                        });
+                        if (!isPassed) {
+                            // Opens a window to the live visio.
+                            button.addEventListener('click', function() {
+                                window.open(roomUrl + "/?session=" + data);
+                            });
+                        } else {
+                            // If the visio is passed and has a broadcast.
+                            button.addEventListener('click', function() {
+                                window.open(roomUrl);
+                            });
+                        }
                     }
 
                     container.appendChild(button);
