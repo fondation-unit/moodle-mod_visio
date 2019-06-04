@@ -76,10 +76,10 @@ function($, ajax, notification, str) {
                     .done(function(s) {
                     notification.addNotification({
                         message: s,
-                        type: "success"
+                        type: 'success'
                     });
                 });
-            },
+            }.bind(this),
             fail: notification.exception
         }]);
     };

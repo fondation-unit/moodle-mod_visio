@@ -148,7 +148,7 @@ class mod_visio_external extends external_api {
             }
         }
 
-        return date('d/m/Y H:i:s', time());
+        return date('H:i:s', time());
     }
 
     /**
