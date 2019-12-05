@@ -21,6 +21,7 @@ function($, ajax, notification, str) {
         if ($('#user-notifications').length) {
             $('#user-notifications').appendTo('#notifications-area');
         }
+        this._region.find('tbody').hide();
     };
 
     ViewParticipation.prototype._getUsersPresence = function() {
@@ -34,9 +35,12 @@ function($, ajax, notification, str) {
         }.bind(this))
         .fail(notification.exception)
         .always(function(){
+            this._region.find('tbody').show();
+
             if (timeout) {
                 clearTimeout(timeout);
             }
+
             currentReq = null;
             timeout = setTimeout(this._getUsersPresence.bind(this), INTERVAL);
         }.bind(this));

@@ -68,7 +68,9 @@ function visio_add_instance($data, $mform) {
 function visio_update_instance($data, $mform) {
     global $CFG, $DB, $USER;
 
+    $config = get_config('mod_visio');
     $parameters = array();
+
     for ($i = 0; $i < 100; $i++) {
         $parameter = "parameter_$i";
         $variable  = "variable_$i";
@@ -81,6 +83,30 @@ function visio_update_instance($data, $mform) {
 
     $data->timemodified = time();
     $data->id           = $data->instance;
+
+    // Find the good room number.
+    $sql = "SELECT * FROM {event} WHERE eventtype = 'visio_conf' AND timestart BETWEEN ? AND ? AND instance <> ?";
+    $start = strval(intval($data->starttime) - 1800);
+    $end = strval(intval($data->starttime + $data->duration) + 1800);
+    $events = $DB->get_records_sql($sql, array($start, $end, $data->id));
+
+    $takenrooms = array();
+    foreach($events as $e) {
+        $v = $DB->get_record('visio', array('id' => $e->instance));
+        $takenrooms[] = $v->roomurl;
+    }
+
+    $validroom = '';
+    for($i = 0; $i<$config->roomsnumber; $i++) {
+        $n = $i+1;
+        $item = $config->{'room'.$n};
+        if (!in_array($item, $takenrooms)) {
+            $validroom = $item;
+            break;
+        }
+    }
+
+    $data->roomurl = $validroom;
 
     // Get the visio object before update to check the broadcast URL.
     $oldvisio = $DB->get_record('visio', array('id' => $data->id), '*', MUST_EXIST);

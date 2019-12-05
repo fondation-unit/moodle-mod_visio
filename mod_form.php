@@ -54,8 +54,7 @@ class mod_visio_mod_form extends moodleform_mod {
         $mform->addRule('introeditor', null, 'required', null, 'server');
 
         // Start and end date selectors.
-        $time       = time();
-        $starttime  = usertime($time);
+        $starttime  = usertime(\time());
         $mform->addElement('date_time_selector', 'starttime', get_string('starttime', 'visio'));
         $mform->addRule('starttime', null, 'required', null, 'client');
 
@@ -72,6 +71,16 @@ class mod_visio_mod_form extends moodleform_mod {
         $mform->addElement('text', 'broadcasturl', get_string('broadcasturl', 'visio'), array('size' => '48'));
         $mform->setType('broadcasturl', PARAM_RAW_TRIMMED);
         $mform->addHelpButton('broadcasturl', 'broadcasturl', 'visio');
+
+        // Add poll preferences fieldset where users choose between available visio dates.
+        $mform->addElement('header', 'poll', get_string('poll', 'visio'));
+
+        // Start and end date selectors.
+        $mform->addElement('date_time_selector', 'polltime_1', get_string('polltime_1', 'visio'), array('optional'=>true));
+        $mform->addElement('date_time_selector', 'polltime_2', get_string('polltime_2', 'visio'), array('optional'=>true));
+        $mform->addElement('date_time_selector', 'polltime_3', get_string('polltime_3', 'visio'), array('optional'=>true));
+        $mform->addElement('date_time_selector', 'polltime_4', get_string('polltime_4', 'visio'), array('optional'=>true));
+        $mform->addElement('date_time_selector', 'polltime_5', get_string('polltime_5', 'visio'), array('optional'=>true));
 
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();
@@ -103,14 +112,14 @@ class mod_visio_mod_form extends moodleform_mod {
         $errors = parent::validation($data, $files);
 
         $sql = "SELECT * FROM {event} WHERE eventtype = 'visio_conf' AND timestart BETWEEN ? AND ?";
-        $start = strval(intval($data['starttime']) - 900);
-        $end = strval(intval($data['starttime'] + $data['duration']) + 900);
+        $start = strval(intval($data['starttime']) - 1800);
+        $end = strval(intval($data['starttime'] + $data['duration']) + 1800);
 
         $events = $DB->get_records_sql($sql, array($start, $end));
         $roomid = count($events) + 1;
         if (!empty($events)) {
             // If the maximum number of rooms is already reached.
-            if (count($events) >= $config->roomsnumber) {
+            if (count($events) >= $config->roomsnumber && \time() <= $start) {
                 $errors['starttime'] = get_string('date_taken', 'visio');
             } else {
                 $mform->addElement('hidden', 'roomurl', $config->{'room'.$roomid});

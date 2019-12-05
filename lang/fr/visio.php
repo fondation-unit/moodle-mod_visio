@@ -71,3 +71,10 @@ $string['messageprovider:submissiondeletion'] = 'Une web-conférence a été sup
 $string['nofiticationsubject'] = 'Nouvelle web-conférence';
 $string['notificationbroadcast'] = 'Ajout d’une rediffusion';
 $string['nofiticationdeletion'] = 'Annulation de web-conférence';
+
+$string['poll'] = 'Sondage';
+$string['polltime_1'] = 'Créneau 1';
+$string['polltime_2'] = 'Créneau 2';
+$string['polltime_3'] = 'Créneau 3';
+$string['polltime_4'] = 'Créneau 4';
+$string['polltime_5'] = 'Créneau 5';

@@ -204,4 +204,98 @@ class mod_visio_external extends external_api {
             )
         ));
     }
+
+    /**
+     * Describes the parameters for set_pollchoice.
+     *
+     * @return external_function_parameters
+     * @since  Moodle 3.4
+     */
+    public static function set_pollchoice_parameters() {
+        return new external_function_parameters(
+            array(
+                'visioid' => new external_value(PARAM_INT, 'The visio ID'),
+                'poll_value' => new external_value(PARAM_INT, 'The poll value ID')
+            )
+        );
+    }
+
+    public static function set_pollchoice($visioid, $pollvalue) {
+        global $DB, $USER;
+
+        // Parameters validation.
+        $params = self::validate_parameters(self::set_pollchoice_parameters(),
+            array('visioid' => $visioid, 'poll_value' => $pollvalue));
+
+        $dataobject = new \stdClass();
+        $dataobject->visioid = $params['visioid'];
+        $dataobject->userid = $USER->id;
+        $dataobject->poll_value = $params['poll_value'];
+    
+        $data = $DB->get_record('visio_polls', array('visioid' => $params['visioid'], 'userid' => $USER->id));
+        if ($data) {
+            $dataobject->id = $data->id;
+            $DB->update_record('visio_polls', $dataobject);
+            return true;
+        } else {
+            if ($DB->insert_record('visio_polls', $dataobject, true)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns description of method result value.
+     *
+     * @return external_description
+     * @since Moodle 3.4
+     */
+    public static function set_pollchoice_returns() {
+        return new external_value(PARAM_BOOL, 'Poll choice correctly set');
+    }
+
+
+    /**
+     * Describes the parameters for get_pollchoices.
+     *
+     * @return external_function_parameters
+     * @since  Moodle 3.4
+     */
+    public static function get_pollchoices_parameters() {
+        return new external_function_parameters(
+            array(
+                'visioid' => new external_value(PARAM_INT, 'The visio ID'),
+                'poll_value' => new external_value(PARAM_INT, 'The poll value ID')
+            )
+        );
+    }
+
+    public static function get_pollchoices($visioid) {
+        global $DB;
+
+        // Parameters validation.
+        $params = self::validate_parameters(self::get_pollchoices_parameters(),
+            array('visioid' => $visioid));
+
+        $data = $DB->get_records('visio_polls', array('visioid' => $params['visioid']));
+        return $data;
+    }
+
+    /**
+     * Returns description of method result value.
+     *
+     * @return external_description
+     * @since Moodle 3.4
+     */
+    public static function get_pollchoices_returns() {
+        return new external_multiple_structure(new external_single_structure(
+            array(
+                'id' => new external_value(PARAM_INT, 'The component id.'),
+                'visioid' => new external_value(PARAM_RAW, 'The visio id.'),
+                'userid' => new external_value(PARAM_RAW, 'The user id.'),
+                'poll_value' => new external_value(PARAM_RAW, 'Value of the poll choice.')
+            )
+        ));
+    }
 }

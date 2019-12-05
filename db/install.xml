@@ -40,10 +40,10 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="Primary key for visio_presence"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="userid" UNIQUE="false" FIELDS="user"/>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
       </INDEXES>
       <INDEXES>
-        <INDEX NAME="userfrom" UNIQUE="false" FIELDS="user"/>
+        <INDEX NAME="userfrom" UNIQUE="false" FIELDS="userid"/>
       </INDEXES>
     </TABLE>
   </TABLES>

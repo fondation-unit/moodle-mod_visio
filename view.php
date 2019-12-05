@@ -71,44 +71,44 @@ if ($visio->intro != "") {
     );
 }
 
-$startstr = get_string("starttime", "visio");
-echo html_writer::div(
-    '<p><strong>'.$startstr.'</strong> : le '.date('d/m/Y', $visio->starttime).' &agrave; '.date('H:i', $visio->starttime).'</p>'
-);
-echo html_writer::div(
-    '<p><strong>'.get_string("duration", "visio").'</strong> : '.gmdate('H:i', $visio->duration).'</p>'
-);
-
+$starttime = date('d/m/Y', $visio->starttime) . ' ' .get_string("to"). ' ' .date('H:i', $visio->starttime);
+$duration = gmdate('H:i', $visio->duration);
 $accesstime = intval($visio->starttime) - 900;
 $passedtime = intval($visio->starttime + $visio->duration) + 900;
 $roomurl = get_visio_url($visio);
 
-echo html_writer::div('<p>&nbsp;</p>');
+$header = new \mod_visio\output\header($starttime, $duration);
+$output = $PAGE->get_renderer('mod_visio');
+echo $output->render($header);
+
+$poll = new \mod_visio\output\poll($visio->id, $USER->id, $USER->firstname, $USER->lastname, $isteacher);
+$output = $PAGE->get_renderer('mod_visio');
+echo $output->render($poll);
+
+// Visio launcher.
+$config = get_config('mod_visio');
+$apiurl = $config->connect_url . "/api/xml?action=common-info";
+
+$launcher = new \mod_visio\output\launcher(
+    $visio->id,
+    $USER->id,
+    $USER->firstname,
+    $USER->lastname,
+    $isteacher,
+    $roomurl,
+    $apiurl,
+    $visio->broadcasturl,
+    $accesstime,
+    $passedtime
+);
+$launcherout = $PAGE->get_renderer('mod_visio');
+echo $launcherout->render($launcher);
 
 if ($isteacher) {
-    // If $USER is the course teacher.
-    $config = get_config('mod_visio');
-    $path = $config->connect_url . "/api/xml?action=common-info";
-    $ispassed = \time() > $passedtime;
-
-    if (!$ispassed) {
-        $PAGE->requires->js_call_amd('mod_visio/visio_actions', 'init', array($path, $roomurl, $ispassed));
-    } else {
-        $PAGE->requires->js_call_amd('mod_visio/visio_actions', 'init', array($path, $visio->broadcasturl, $ispassed));
-    }
-    echo '<div id="mod_visio_receiver"></div>';
-
     $renderable = new \mod_visio\output\visio_table($visio->id, $USER->id, $course->id);
     $output = $PAGE->get_renderer('mod_visio');
     echo $output->render($renderable);
-} else {
-    // Students.
-    $externalurl = $roomurl . '/?guestName=' . $USER->firstname . ' ' . $USER->lastname;
-
-    $launcher = new \mod_visio\output\launcher($visio->id, $USER->id, $externalurl, $visio->broadcasturl, $accesstime, $passedtime);
-    $launcherout = $PAGE->get_renderer('mod_visio');
-    echo $launcherout->render($launcher);
 }
-echo $OUTPUT->box_end();
 
+echo $OUTPUT->box_end();
 echo $OUTPUT->footer();

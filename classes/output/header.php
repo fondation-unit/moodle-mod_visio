@@ -20,40 +20,32 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace mod_visio\output;
-defined('MOODLE_INTERNAL') || die;
+defined('MOODLE_INTERNAL') || die();
 
-use plugin_renderer_base;
 use renderable;
+use renderer_base;
+use templatable;
+use stdClass;
 
-class renderer extends plugin_renderer_base {
+class header implements renderable, templatable {
 
-    /**
-     *
-     * @param \templatable $launcher
-     * @return string|boolean
-     */
-    public function render_launcher(\templatable $launcher) {
-        $data = $launcher->export_for_template($this);
-        return $this->render_from_template('mod_visio/launcher', $data);
+    public function __construct($starttime, $duration) {
+        $this->starttime = $starttime;
+        $this->duration = $duration;
     }
 
     /**
+     * Export this data so it can be used as the context for a mustache template.
      *
-     * @param \templatable $header
-     * @return string|boolean
+     * @param \renderer_base $output
+     * @return stdClass
      */
-    public function render_header(\templatable $header) {
-        $data = $header->export_for_template($this);
-        return $this->render_from_template('mod_visio/header', $data);
-    }
-
-    /**
-     *
-     * @param \templatable $output
-     * @return string|boolean
-     */
-    public function render_visio_table(\templatable $output) {
-        $data = $output->export_for_template($this);
-        return $this->render_from_template('mod_visio/main', $data);
+    public function export_for_template(renderer_base $output) {
+        return [
+            'startstr' => get_string("starttime", "visio"),
+            'starttime' => $this->starttime,
+            'durationstr' => get_string("duration", "visio"),
+            'duration' => $this->duration
+        ];
     }
 }

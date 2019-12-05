@@ -88,5 +88,50 @@ function xmldb_visio_upgrade($oldversion) {
         }
     }
 
+    if ($oldversion < 2019060501) {
+        // Adds fields for the polling feature.
+        $table = new xmldb_table('visio');
+        $fields = array(
+            new xmldb_field('polltime_1', XMLDB_TYPE_INTEGER, '10', null, null, null, null),
+            new xmldb_field('polltime_2', XMLDB_TYPE_INTEGER, '10', null, null, null, null),
+            new xmldb_field('polltime_3', XMLDB_TYPE_INTEGER, '10', null, null, null, null),
+            new xmldb_field('polltime_4', XMLDB_TYPE_INTEGER, '10', null, null, null, null),
+            new xmldb_field('polltime_5', XMLDB_TYPE_INTEGER, '10', null, null, null, null)
+        );
+
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+        
+        upgrade_mod_savepoint(true, 2019060501, 'visio');
+    }
+
+
+    if ($oldversion < 2019060502) {
+        // Adds users choices fields for the polling feature.
+        $table = new xmldb_table('visio_polls');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('visioid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('poll_value', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        // Adding keys to table.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('visioid', XMLDB_KEY_FOREIGN, array('visioid'), 'visio', array('id'));
+        $table->add_key('userid', XMLDB_KEY_FOREIGN, array('userid'), 'user', array('id'));
+
+        // Create table.
+        if ($dbman->table_exists($table)) {
+            $dbman->drop_table($table);
+        }
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        
+        upgrade_mod_savepoint(true, 2019060502, 'visio');
+    }
+
     return true;
 }

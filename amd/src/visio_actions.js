@@ -10,7 +10,7 @@ function(ajax, notification, str) {
         button.classList = 'btn btn-primary';
 
         // If the visio is not passed yet.
-        if (!isPassed) {
+        if (isPassed == 0) {
             str.get_string('access', 'visio').done(function(s) { button.innerHTML = s; });
         } else {
             // If the visio is passed and has no broadcast yet.

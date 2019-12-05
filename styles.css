@@ -1,0 +1,23 @@
+.visio-progress.progress-bar {
+    width: 0;
+} 
+.visio-progress.bg-purple {
+    background-color: #825CD6 !important;
+} 
+.visio-progress.progress .progress-bar {
+    transition: unset;
+}
+
+.poll-element {
+    display: inline-block;
+}
+
+.poll-number,
+.poll-time {
+    float: left;
+    width: 50%;
+}
+
+.visio-progress {
+    clear: both;
+}

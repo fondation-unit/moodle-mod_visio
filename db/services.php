@@ -47,5 +47,21 @@ $functions = array(
         'type'          => 'read',
         'ajax'          => true,
         'capabilities'  => 'mod/course:manageactivities'
+    ),
+    'mod_visio_set_pollchoice' => array(
+        'classname'     => 'mod_visio_external',
+        'methodname'    => 'set_pollchoice',
+        'description'   => 'Set the poll choice of the user',
+        'type'          => 'write',
+        'ajax'          => true,
+        'capabilities'  => ''
+    ),
+    'mod_visio_get_pollchoices' => array(
+        'classname'     => 'mod_visio_external',
+        'methodname'    => 'get_pollchoices',
+        'description'   => 'Get the poll choices of users',
+        'type'          => 'read',
+        'ajax'          => true,
+        'capabilities'  => 'mod/course:manageactivities'
     )
 );

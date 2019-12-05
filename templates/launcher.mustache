@@ -6,11 +6,22 @@
             target="_blank">{{{data.str}}}</a>
     {{/showButton}}
     {{^showButton}}
-        <span class="alert alert-info">{{{data.str}}}</span>
+        {{#data.str}}
+            <span class="alert alert-info">{{{data.str}}}</span>
+        {{/data.str}}
     {{/showButton}}
 </div>
-{{#js}}
-require(['mod_visio/participation'], function(Participation) {
-    new Participation('[data-region="visio-launcher"]', {{visioid}}, {{currentuser}});
-});
-{{/js}}
+{{#isTeacher}}
+    {{#js}}
+    require(['mod_visio/visio_actions'], function(action) {
+        action.init('{{apiurl}}', '{{data.url}}', {{data.ispassed}});
+    });
+    {{/js}}
+{{/isTeacher}}
+{{^isTeacher}}
+    {{#js}}
+    require(['mod_visio/participation'], function(Participation) {
+        new Participation('[data-region="visio-launcher"]', {{visioid}}, {{currentuser}});
+    });
+    {{/js}}
+{{/isTeacher}}

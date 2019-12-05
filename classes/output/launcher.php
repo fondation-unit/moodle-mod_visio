@@ -29,10 +29,25 @@ use stdClass;
 
 class launcher implements renderable, templatable {
 
-    public function __construct($visioid, $userid, $externalurl, $broadcasturl, $accesstime, $passedtime) {
+    public function __construct(
+        $visioid,
+        $userid,
+        $firstname,
+        $lastname,
+        $isteacher = false,
+        $roomurl,
+        $apiurl,
+        $broadcasturl,
+        $accesstime,
+        $passedtime
+    ) {
         $this->visioid = $visioid;
         $this->userid = $userid;
-        $this->externalurl = $externalurl;
+        $this->firstname = $firstname;
+        $this->lastname = $lastname;
+        $this->isteacher = $isteacher;
+        $this->roomurl = $roomurl;
+        $this->apiurl = $apiurl;
         $this->broadcasturl = $broadcasturl;
         $this->accesstime = $accesstime;
         $this->passedtime = $passedtime;
@@ -47,37 +62,43 @@ class launcher implements renderable, templatable {
     public function export_for_template(renderer_base $launcher) {
         $data = new stdClass();
         $showbutton = false;
+        $data->url = $this->roomurl;
+        $data->ispassed = false;
 
-        if (time() >= $this->passedtime) {
-            if (isset($this->externalurl)) {
-                if ($this->broadcasturl != '') {
-                    $showbutton = true;
-                    $data->url = $this->broadcasturl;
-                    $data->str = get_string('broadcastview', 'visio');
-                } else {
-                    $showbutton = false;
-                    $data->str = get_string('broadcastsoon', 'visio');
-                }
+        if (!$this->isteacher) {
+            if (\time() >= $this->passedtime) {
+                $data->url = isset($this->broadcasturl) ? $this->broadcasturl : '';
+                $data->str = isset($this->broadcasturl) ? get_string('broadcastview', 'visio') : get_string('broadcastsoon', 'visio');
+                $data->ispassed = true;
+                $showbutton = isset($this->broadcasturl) ? true : false;
+            } else if (\time() >= $this->accesstime) {
+                $data->url = $this->roomurl . '/?guestName=' . $this->firstname . ' ' . $this->lastname;
+                $data->str = get_string('modulename', 'visio');
+                $showbutton = true;
             } else {
+                $data->str = get_string('early_access', 'visio');
                 $showbutton = false;
-                $data->url = '';
-                $data->str = get_string('late_access', 'visio');
             }
-        } else if ($this->accesstime <= time()) {
-            $showbutton = true;
-            $data->url = $this->externalurl;
-            $data->str = get_string('modulename', 'visio');
         } else {
-            $showbutton = false;
-            $data->url = '';
-            $data->str = get_string('early_access', 'visio');
+            if (\time() >= $this->passedtime) {
+                $data->url = isset($this->broadcasturl) ? $this->broadcasturl : '';
+                $data->str = isset($this->broadcasturl) ? get_string('broadcastview', 'visio') : get_string('broadcastsoon', 'visio');
+                $data->ispassed = true;
+            } else if (\time() >= $this->accesstime) {
+                $data->url = $this->roomurl;
+            } else {
+                $data->url = $this->roomurl;
+                $data->str = get_string('early_access', 'visio');
+            }
         }
 
         return [
+            'isTeacher' => $this->isteacher,
             'showButton' => $showbutton,
             'data' => $data,
             'currentuser' => $this->userid,
-            'visioid' => $this->visioid
+            'visioid' => $this->visioid,
+            'apiurl' => $this->apiurl
         ];
     }
 }
